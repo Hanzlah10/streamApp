@@ -15,6 +15,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //upload it to db 
     //remove password and refeshToken from the response
     //return res
+
     // http://localhost:8000/api/v1/users/register
     // {
     //     email: 'hanzalasarguroh@gmail.com',
@@ -31,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "All fields are required !")
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -43,8 +44,9 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.files?.avatar[0]?.path
     const coverLocalPath = req.files?.coverImage[0]?.path
 
+
     if (!avatarLocalPath) {
-        throw new apiError(400, "Avatar is required")
+        throw new apiError(400, "Avatar path  is required")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
@@ -54,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(400, "Avatar is required")
     }
 
-    const user = User.create({
+    const user = await User.create({
         fullName,
         avatar: avatar.url,
         coverImage: coverImage.url || "",
