@@ -6,6 +6,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 const userRouter = Router()
 
 userRouter.route('/register').post(
+    
     upload.fields([ // ye code feild me se ye avatar aur coverImage ko leke local public foder me upload kr ke uski path dega..
         {
             name:'avatar',
@@ -16,6 +17,7 @@ userRouter.route('/register').post(
             maxCount: 1
         }
     ]),
+
     registerUser)
 
 

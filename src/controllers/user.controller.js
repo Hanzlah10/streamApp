@@ -16,6 +16,10 @@ const registerUser = asyncHandler(async (req, res) => {
     //remove password and refeshToken from the response
     //return res
 
+
+
+
+
     // http://localhost:8000/api/v1/users/register
     // {
     //     email: 'hanzalasarguroh@gmail.com',
@@ -61,6 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!avatar) {
         throw new apiError(400, "Avatar is required")
     }
+    
 
     const user = await User.create({
         fullName,
