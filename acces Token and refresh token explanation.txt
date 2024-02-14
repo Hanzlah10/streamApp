@@ -1,0 +1,16 @@
+
+Access Token : short lived(minutes to hours)
+Refresh Token : long lived(days to weeks)
+
+user logins=>
+    access and refresh Token are generated in server and stores refreshToken in DB =>
+        server send both the token to client  =>
+            (The access token =>is used by client in the response body or headers,
+              refresh token  stored by the client in browser cookie or local storage.)=>
+                The client uses access token in the headers of requests to access protected resources (e.g., API endpoints).=>
+                    when access token expires then client uses refreshToken to request a new accessToken from the server.=>
+                        server validates the refresh Token from client with its Db one then give new accessToken to client
+                            repeatedly done
+
+
+
