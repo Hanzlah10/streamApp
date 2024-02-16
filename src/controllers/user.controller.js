@@ -343,6 +343,82 @@ const updateCoverImage = asyncHandler(async (req, res) => {
         )
 })
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+
+    const { username } = req.params
+
+    if (!username?.trim()) {
+        throw new apiError(400, "username is missing")
+    }
+
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username.toLowerCase() //returns an array with one object , bcz here logic is to get username and usename is unique!
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localFeild: "_id",
+                foreignFeild: "channel",
+                as: "subscribers"  //ye add nhi hoga document me
+            }
+        },
+        {
+            $lookup: {
+                from: 'subscriptions',
+                localFeild: "_id",
+                foreignFeild: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            $addFeilds:{ //yaha add hoga..
+                subcribersCount:{
+                    $size: "$subscribers"
+                },
+                channelsSubscribedToCount:{
+                    $size: "$subscribedTo"
+                },
+                isSubscribed:{
+                    $cond:{
+                        if: {$in: [req.user?._id, "$subscribers.subscriber" ]},
+                        then : true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project:{
+                fullName:1,
+                username: 1,
+                subcribersCount:1,
+                channelsSubscribedToCount:1,
+                email: 1,
+                avatar: 1,
+                coverImage: 1,
+                isSubscribed:1,
+                createdAt: 1
+                
+            }
+        }
+
+    ])
+
+    if(!channel?.length){
+        throw new apiError(400,"channel does not exists")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,channel[0],"Channel Details Fetched Successfully") //as above it return an array with one object so here used channel[0]
+    )
+
+
+})
 export {
     registerUser,
     loginUser,
