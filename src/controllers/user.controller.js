@@ -374,48 +374,105 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
             }
         },
         {
-            $addFeilds:{ //yaha add hoga..
-                subcribersCount:{
+            $addFeilds: { //yaha add hoga..
+                subcribersCount: {
                     $size: "$subscribers"
                 },
-                channelsSubscribedToCount:{
+                channelsSubscribedToCount: {
                     $size: "$subscribedTo"
                 },
-                isSubscribed:{
-                    $cond:{
-                        if: {$in: [req.user?._id, "$subscribers.subscriber" ]},
-                        then : true,
+                isSubscribed: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                        then: true,
                         else: false
                     }
                 }
             }
         },
         {
-            $project:{
-                fullName:1,
+            $project: {
+                fullName: 1,
                 username: 1,
-                subcribersCount:1,
-                channelsSubscribedToCount:1,
+                subcribersCount: 1,
+                channelsSubscribedToCount: 1,
                 email: 1,
                 avatar: 1,
                 coverImage: 1,
-                isSubscribed:1,
+                isSubscribed: 1,
                 createdAt: 1
-                
+
             }
         }
 
     ])
 
-    if(!channel?.length){
-        throw new apiError(400,"channel does not exists")
+    if (!channel?.length) {
+        throw new apiError(400, "channel does not exists")
     }
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200,channel[0],"Channel Details Fetched Successfully") //as above it return an array with one object so here used channel[0]
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, channel[0], "Channel Details Fetched Successfully") //as above it return an array with one object so here used channel[0]
+        )
+
+
+})
+
+const getUserWatchHistory = asyncHandler(async (req, res) => {
+
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                foreignFeild: "_id",
+                localFeild: "watchHistory",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            foreignFeild: "_id",
+                            localFeild: "owner",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                },
+                                {
+                                    $addFeilds: {
+                                        owner: {
+                                            $first: "$owner"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                "History fetched successfull",
+                user[0].watchHistory
+            )
+        )
 
 
 })
@@ -429,7 +486,8 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateCoverImage,
-    getUserChannelProfile
+    getUserChannelProfile,
+    getUserWatchHistory
 }
 
 
