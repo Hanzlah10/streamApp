@@ -42,7 +42,6 @@ const registerUser = asyncHandler(async (req, res) => {
     //return res
 
 
-
     const { fullName, username, password, email } = req.body
 
     if ([fullName, username, password, email].some((feild) => feild?.trim() === "")) {
@@ -108,7 +107,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body
     // console.log(req.body);
 
-    if (!username && !email) {
+    if (!username && !email) {m
         throw new apiError(400, "username or email is required")
     }
 
@@ -153,8 +152,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1   // '1' flag will remove the feild from the document
             }
         },
         {
@@ -171,6 +170,9 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(200, "User logged out Successfully")
         )
+        
+
+        
 
 })
 
@@ -487,7 +489,8 @@ export {
     updateUserAvatar,
     updateCoverImage,
     getUserChannelProfile,
-    getUserWatchHistory
+    getUserWatchHistory,
+    
 }
 
 
