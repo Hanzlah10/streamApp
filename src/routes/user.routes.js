@@ -25,20 +25,15 @@ userRouter.route('/login').post(loginUser)
 
 
 // secured Routes 
-userRouter.route('/logout').post(verifyJWT,logoutUser)
+userRouter.route('/logout').post(verifyJWT, logoutUser)
 userRouter.route('/refresh-token').post(accessAndRefreshToken)
-userRouter.route('/change-password').post(verifyJWT,changeCurrentPassword)
-userRouter.route('/current-user').post(verifyJWT,getCurrentUser)
-userRouter.route('/update-account').patch(verifyJWT,updateAccountDetails)
-userRouter.route('/update-avatar').patch(verifyJWT,upload.single("avatar"),updateUserAvatar)
-userRouter.route('/update-converImage').patch(verifyJWT,upload.single("coverImage"),updateUserAvatar)
-userRouter.route('/channel/:username').get(verifyJWT,getUserChannelProfile)
-userRouter.route('history').get(verifyJWT,getUserWatchHistory)
-
-
-
-
-
+userRouter.route('/change-password').post(verifyJWT, changeCurrentPassword)
+userRouter.route('/current-user').post(verifyJWT, getCurrentUser)
+userRouter.route('/update-account').patch(verifyJWT, updateAccountDetails)
+userRouter.route('/update-avatar').patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
+userRouter.route('/update-converImage').patch(verifyJWT, upload.single("coverImage"), updateUserAvatar)
+userRouter.route('/channel/:username').get(verifyJWT, getUserChannelProfile)
+userRouter.route('history').get(verifyJWT, getUserWatchHistory)
 
 
 export default userRouter
